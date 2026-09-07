@@ -75,6 +75,9 @@
     padding:9px 16px; border-radius:2px; font-weight:600;
   }
   .nav-cta:hover{background:#f3b452;}
+  .nav-login{font-size:13px; color:var(--text-dim);}
+  .nav-login:hover{color:var(--amber);}
+  .nav-auth{display:flex; align-items:center; gap:18px;}
   @media (max-width:760px){ .nav-links{display:none;} }
 
   /* ---------- HERO ---------- */
@@ -318,7 +321,10 @@
       <a href="#faq">FAQ</a>
       <a href="#acceso">Acceso</a>
     </div>
-    <a class="nav-cta" href="#acceso">Entrar al canal</a>
+    <div class="nav-auth">
+      <a class="nav-login" href="dashboard.html">Iniciar sesión</a>
+      <a class="nav-cta" href="dashboard.html?tab=register">Crear cuenta</a>
+    </div>
   </nav>
 </header>
 

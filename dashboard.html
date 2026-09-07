@@ -50,6 +50,14 @@
     border-radius:2px; color:var(--text); font-family:'IBM Plex Mono'; font-size:14px;
   }
   .field input:focus{outline:none; border-color:var(--amber);}
+  .pw-wrap{position:relative;}
+  .pw-wrap input{padding-right:44px;}
+  .pw-toggle{
+    position:absolute; right:0; top:0; height:100%; width:40px;
+    background:none; border:none; color:var(--text-faint); font-size:16px; cursor:pointer;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .pw-toggle:hover{color:var(--amber);}
   .checkline{display:flex; align-items:flex-start; gap:10px; font-size:12px; color:var(--text-dim); margin-bottom:20px;}
   .checkline input{margin-top:3px;}
   .btn{
@@ -124,14 +132,24 @@
 
     <form id="login-form">
       <div class="field"><label>Correo electrónico</label><input type="email" id="login-email" required></div>
-      <div class="field"><label>Contraseña</label><input type="password" id="login-password" required></div>
+      <div class="field"><label>Contraseña</label>
+        <div class="pw-wrap">
+          <input type="password" id="login-password" required>
+          <button type="button" class="pw-toggle" onclick="togglePw('login-password', this)">👁</button>
+        </div>
+      </div>
       <button class="btn" type="submit">Entrar</button>
     </form>
 
     <form id="register-form" style="display:none;">
       <div class="field"><label>Nombre</label><input type="text" id="reg-name" required></div>
       <div class="field"><label>Correo electrónico</label><input type="email" id="reg-email" required></div>
-      <div class="field"><label>Contraseña</label><input type="password" id="reg-password" minlength="6" required></div>
+      <div class="field"><label>Contraseña</label>
+        <div class="pw-wrap">
+          <input type="password" id="reg-password" minlength="6" required>
+          <button type="button" class="pw-toggle" onclick="togglePw('reg-password', this)">👁</button>
+        </div>
+      </div>
       <div class="checkline">
         <input type="checkbox" id="reg-terms" required>
         <label for="reg-terms">Acepto que esta cuenta es de Alpha Traders MX, independiente de mi cuenta en Bitunix, y que se usa para gestionar mi proceso de incorporación a la comunidad.</label>
@@ -245,15 +263,29 @@
   const authError = document.getElementById('auth-error');
 
   // --- tabs ---
+  function activateTab(name){
+    document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.tab === name));
+    document.getElementById('login-form').style.display = name === 'login' ? 'block' : 'none';
+    document.getElementById('register-form').style.display = name === 'register' ? 'block' : 'none';
+  }
   document.querySelectorAll('.tab').forEach(tab => {
     tab.addEventListener('click', () => {
-      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-      tab.classList.add('active');
-      document.getElementById('login-form').style.display = tab.dataset.tab === 'login' ? 'block' : 'none';
-      document.getElementById('register-form').style.display = tab.dataset.tab === 'register' ? 'block' : 'none';
+      activateTab(tab.dataset.tab);
       authError.style.display = 'none';
     });
   });
+  // open register tab directly if the link says ?tab=register
+  if (new URLSearchParams(window.location.search).get('tab') === 'register') {
+    activateTab('register');
+  }
+
+  // --- show/hide password ---
+  window.togglePw = (id, btn) => {
+    const input = document.getElementById(id);
+    const show = input.type === 'password';
+    input.type = show ? 'text' : 'password';
+    btn.textContent = show ? '🙈' : '👁';
+  };
 
   function showError(msg){
     authError.textContent = msg;
