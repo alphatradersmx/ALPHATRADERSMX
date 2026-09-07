@@ -239,6 +239,51 @@
   .report-line span:last-child{color:var(--text); font-weight:600;}
   .report-note{margin-top:16px; font-size:11px; color:var(--text-faint); line-height:1.6;}
 
+  /* ---------- CALCULADORA ---------- */
+  .calc-card{
+    background:var(--panel); border:1px solid var(--line); border-radius:3px;
+    padding:28px 26px; margin-top:36px;
+  }
+  .calc-head{margin-bottom:22px;}
+  .calc-head h3{font-size:19px; color:var(--text);}
+  .calc-head p{color:var(--text-dim); font-size:13px; margin-top:8px; line-height:1.6; max-width:65ch;}
+  .calc-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:16px;}
+  @media (max-width:700px){ .calc-grid{grid-template-columns:1fr;} }
+  .calc-field label{
+    display:block; font-size:11px; letter-spacing:0.04em; color:var(--text-dim);
+    margin-bottom:8px; text-transform:uppercase;
+  }
+  .calc-field .calc-input-wrap{position:relative;}
+  .calc-field span.prefix{
+    position:absolute; left:12px; top:50%; transform:translateY(-50%);
+    color:var(--text-faint); font-size:14px; pointer-events:none;
+  }
+  .calc-field span.suffix{
+    position:absolute; right:12px; top:50%; transform:translateY(-50%);
+    color:var(--text-faint); font-size:14px; pointer-events:none;
+  }
+  .calc-field input{
+    width:100%; background:var(--ink); border:1px solid var(--line-strong); border-radius:2px;
+    color:var(--text); font-family:'IBM Plex Mono', monospace; font-size:14px;
+    padding:12px 14px 12px 26px;
+  }
+  .calc-field input.suffixed{padding-right:34px;}
+  .calc-field input:focus{border-color:var(--amber);}
+  .calc-actions{margin-top:20px;}
+  #calcBtn{cursor:pointer; font-family:'IBM Plex Mono', monospace;}
+  .calc-results{
+    margin-top:24px; display:grid; grid-template-columns:repeat(2,1fr); gap:16px;
+  }
+  @media (max-width:560px){ .calc-results{grid-template-columns:1fr;} }
+  .calc-result-box{background:var(--ink); border:1px solid var(--line); padding:20px 18px; text-align:center;}
+  .calc-result-num{
+    font-family:'Bricolage Grotesque', sans-serif; font-weight:700;
+    font-size:26px; color:var(--amber);
+  }
+  .calc-result-num.neg{color:var(--red);}
+  .calc-result-label{margin-top:6px; font-size:11.5px; color:var(--text-dim);}
+  .calc-note{margin-top:18px; font-size:11px; color:var(--text-faint); line-height:1.6;}
+
   /* ---------- STATS + TRADES TABLE ---------- */
   .stats-row{
     display:grid; grid-template-columns:repeat(4,1fr); gap:1px;
@@ -500,8 +545,109 @@
     <div class="report-note" style="margin-top:22px; max-width:70ch;">
       Cuenta de futuros <b>teórica</b>, con apalancamiento 20x: capital inicial de $6.92, margen de $3.00 por operación, balance final de $17.58 (ganancia neta $10.66). El 355% es rentabilidad sobre el margen apalancado de cada operación, no sobre el capital total invertido — con apalancamiento, tanto las ganancias como las pérdidas se amplifican. Resultados pasados no garantizan resultados futuros; operar cripto con apalancamiento implica riesgo de pérdida total del capital.
     </div>
+
+    <div class="calc-card">
+      <div class="calc-head">
+        <h3>Compruébalo tú mismo</h3>
+        <p>Ingresa tu capital inicial, tu margen por operación y tu apalancamiento (todo en USD) para estimar tu ganancia neta y tu balance final, tomando como referencia la rentabilidad del reporte mensual de arriba.</p>
+      </div>
+
+      <div class="calc-grid">
+        <div class="calc-field">
+          <label for="calcCapital">Capital inicial</label>
+          <div class="calc-input-wrap">
+            <span class="prefix">$</span>
+            <input type="number" id="calcCapital" placeholder="6.92" min="0" step="0.01">
+          </div>
+        </div>
+        <div class="calc-field">
+          <label for="calcMargen">Margen por operación</label>
+          <div class="calc-input-wrap">
+            <span class="prefix">$</span>
+            <input type="number" id="calcMargen" placeholder="3.00" min="0" step="0.01">
+          </div>
+        </div>
+        <div class="calc-field">
+          <label for="calcApalancamiento">Apalancamiento</label>
+          <div class="calc-input-wrap">
+            <span class="prefix">&nbsp;</span>
+            <input type="number" id="calcApalancamiento" class="suffixed" placeholder="20" min="1" step="1">
+            <span class="suffix">X</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="calc-actions">
+        <button id="calcBtn" class="btn btn-primary" type="button">Calcular ganancia</button>
+      </div>
+
+      <div class="calc-results" id="calcResults" style="display:none;">
+        <div class="calc-result-box">
+          <div class="calc-result-num" id="calcGanancia">$0.00</div>
+          <div class="calc-result-label">Ganancia neta estimada</div>
+        </div>
+        <div class="calc-result-box">
+          <div class="calc-result-num" id="calcBalance">$0.00</div>
+          <div class="calc-result-label">Balance final estimado</div>
+        </div>
+      </div>
+
+      <p class="calc-note" id="calcDisclaimer">Esta calculadora es una herramienta ilustrativa: toma como base la rentabilidad del 355% obtenida sobre el margen en el reporte de julio 2026 (con apalancamiento 20x) y la ajusta proporcionalmente al apalancamiento que ingreses. Es una proyección educativa, no una garantía — el rendimiento real de cada operación depende del mercado, y con apalancamiento las pérdidas se amplifican igual que las ganancias.</p>
+    </div>
   </div>
 </section>
+
+<script>
+(function(){
+  const BASE_RENTABILIDAD_PCT = 355;   // rentabilidad de julio 2026 sobre el margen, referencia mostrada en el reporte
+  const BASE_APALANCAMIENTO = 20;      // apalancamiento con el que se obtuvo esa rentabilidad
+
+  const capitalInput = document.getElementById('calcCapital');
+  const margenInput = document.getElementById('calcMargen');
+  const apalancamientoInput = document.getElementById('calcApalancamiento');
+  const calcBtn = document.getElementById('calcBtn');
+  const resultsBox = document.getElementById('calcResults');
+  const gananciaEl = document.getElementById('calcGanancia');
+  const balanceEl = document.getElementById('calcBalance');
+
+  function formatUSD(n){
+    const sign = n < 0 ? '-' : '';
+    return sign + '$' + Math.abs(n).toFixed(2);
+  }
+
+  function calcular(){
+    const capital = parseFloat(capitalInput.value);
+    const margen = parseFloat(margenInput.value);
+    const apalancamiento = parseFloat(apalancamientoInput.value);
+
+    if (isNaN(capital) || isNaN(margen) || isNaN(apalancamiento) || capital < 0 || margen < 0 || apalancamiento <= 0) {
+      resultsBox.style.display = 'grid';
+      gananciaEl.textContent = '—';
+      balanceEl.textContent = '—';
+      gananciaEl.classList.remove('neg');
+      balanceEl.classList.remove('neg');
+      return;
+    }
+
+    const rentabilidadAjustada = BASE_RENTABILIDAD_PCT * (apalancamiento / BASE_APALANCAMIENTO);
+    const gananciaNeta = margen * (rentabilidadAjustada / 100);
+    const balanceFinal = capital + gananciaNeta;
+
+    gananciaEl.textContent = formatUSD(gananciaNeta);
+    balanceEl.textContent = formatUSD(balanceFinal);
+    gananciaEl.classList.toggle('neg', gananciaNeta < 0);
+    balanceEl.classList.toggle('neg', balanceFinal < 0);
+    resultsBox.style.display = 'grid';
+  }
+
+  calcBtn.addEventListener('click', calcular);
+  [capitalInput, margenInput, apalancamientoInput].forEach(function(el){
+    el.addEventListener('keydown', function(e){
+      if (e.key === 'Enter') calcular();
+    });
+  });
+})();
+</script>
 
 <section id="destacados">
   <div class="wrap">
