@@ -79,6 +79,15 @@
   .hello b{color:var(--text);}
   h2.dtitle{font-size:24px; margin-bottom:32px;}
 
+  .free-box{
+    display:flex; align-items:center; justify-content:space-between; gap:14px; flex-wrap:wrap;
+    border:1px solid var(--line-strong); border-radius:3px; padding:18px 20px;
+    background:var(--panel-2); margin-bottom:28px;
+  }
+  .free-title{font-size:14px; color:var(--text); font-weight:600;}
+  .free-sub{font-size:12px; color:var(--text-dim); margin-top:4px;}
+  .section-label{font-size:11.5px; color:var(--text-faint); letter-spacing:0.04em; margin-bottom:14px; text-transform:uppercase;}
+
   .step{
     border:1px solid var(--line); border-radius:3px; margin-bottom:14px; background:var(--panel);
     overflow:hidden;
@@ -164,6 +173,16 @@
   <section id="dashboard-view">
     <div class="hello">Bienvenido a Alpha Traders MX</div>
     <h2 class="dtitle">Tu proceso de incorporación</h2>
+
+    <div class="free-box">
+      <div>
+        <div class="free-title">📡 Canal gratuito — desbloqueado</div>
+        <div class="free-sub">Análisis rápidos, posiciones e ideas de mercado. Ya puedes entrar.</div>
+      </div>
+      <a class="btn" style="width:auto; text-decoration:none; white-space:nowrap;" href="https://t.me/ALPHATRADERSMX" target="_blank" rel="noopener">Entrar al canal</a>
+    </div>
+
+    <div class="section-label">Grupo VIP — requiere completar estos pasos</div>
 
     <div class="step open" id="step-1">
       <div class="step-head">
